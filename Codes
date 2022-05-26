@@ -1,0 +1,190 @@
+-- Databricks notebook source
+--To view table
+SELECT * 
+FROM `sportsstats_1_csv` 
+LIMIT 12
+
+-- COMMAND ----------
+
+--Total count after removing duplicates
+SELECT count(*) 
+FROM `sportsstats_1_csv`
+
+
+-- COMMAND ----------
+
+--To count male and female that have ever participated 
+SELECT
+  count(case when Sex = 'M' then 1 end) as male_count,
+  count(case when Sex = 'F' then 1 end) as female_count
+ FROM `sportsstats_1_csv`
+
+
+-- COMMAND ----------
+
+--To count male and female that have ever won a medal
+SELECT
+  count(case when Sex = 'M' then 1 end) as male_count,
+  count(case when Sex = 'F' then 1 end) as female_count
+FROM `sportsstats_1_csv`
+WHERE Medal <> 'NA'
+
+
+
+-- COMMAND ----------
+
+--Top 5 sports in which female athletes have won the most medals.
+
+SELECT sport, COUNT(medal) AS medal_count 
+FROM `sportsstats_1_csv`
+WHERE sex = 'F' AND Medal <> 'NA'
+GROUP BY sport
+ORDER BY medal_count DESC
+LIMIT 5
+
+-- COMMAND ----------
+
+--To view trends in female athelete per year
+SELECT year, COUNT(*) AS athletes_count 
+FROM `sportsstats_1_csv`
+GROUP BY year, sex
+HAVING sex = 'F'
+ORDER BY year
+
+-- COMMAND ----------
+
+--To compare the number of female and male athlete that participated per year
+SELECT year, 
+count(case when Sex = 'M' then 1 end) as male_count,
+count(case when Sex = 'F' then 1 end) as female_count
+ FROM `sportsstats_1_csv`
+GROUP BY year
+ORDER BY year
+
+-- COMMAND ----------
+
+--Who are the youngest female athletes to ever compete?
+
+SELECT DISTINCT name, 
+  age, sport, event, noc, games, city, medal
+FROM `sportsstats_1_csv`
+WHERE age <> 'NA' AND sex ='F'
+ORDER BY age
+
+-- COMMAND ----------
+
+--Who are the top 5 oldest female athletes to ever compete?
+SELECT DISTINCT name, 
+  age, sport, event, noc, games, city, medal
+FROM `sportsstats_1_csv`
+WHERE age <> 'NA' AND sex ='F'
+ORDER BY age DESC
+LIMIT 5
+
+
+
+-- COMMAND ----------
+
+--Who are the oldest female athletes to ever compete and sport was not equal to Art?
+SELECT DISTINCT name, 
+  age, sport, event, noc, games, city, medal
+FROM `sportsstats_1_csv`
+WHERE age <> 'NA' AND sport <> 'Art Competitions' AND sex ='F'
+ORDER BY age DESC
+
+
+-- COMMAND ----------
+
+--Who are the top 5 heaviest female athletes to ever compete?
+SELECT DISTINCT name, 
+  age,  CAST(weight AS DECIMAL), sport, event, noc, games, city, medal
+FROM `sportsstats_1_csv`
+WHERE weight <> 'NA' AND sex ='F'
+ORDER BY weight DESC
+LIMIT 5
+
+-- COMMAND ----------
+
+--To find the age distribution with most medal won
+SELECT age, 
+COUNT(*) AS medalists_count
+FROM `sportsstats_1_csv`
+WHERE age <> 'NA' AND medal <> 'NA'
+GROUP BY age
+ORDER BY age
+
+-- COMMAND ----------
+
+--Is there a data relationship based on season
+SELECT name, season, year, noc, sport
+FROM `sportsstats_1_csv`
+WHERE year IN ('1994', '1998', '2002', '2006', '2010', '2014') AND Sex = 'F'
+ORDER BY year
+
+-- COMMAND ----------
+
+--Is there a data relationship based on season
+SELECT name, season, year, noc, sport
+FROM `sportsstats_1_csv`
+WHERE year IN ('1996', '2000', '2004', '2008', '2012', '2016') AND Sex = 'F'
+ORDER BY year
+
+-- COMMAND ----------
+
+--Is there a data relationship based on season
+SELECT year, season, 
+count(case when Sex = 'M' then 1 end) as male_count,
+count(case when Sex = 'F' then 1 end) as female_count
+FROM `sportsstats_1_csv`
+GROUP BY year, season
+ORDER BY year
+
+-- COMMAND ----------
+
+--Highest number of medal won by a female athlete
+
+SELECT name, noc, sport, count(medal) as medal_count
+FROM `sportsstats_1_csv`
+WHERE medal <> 'NA' AND Sex = 'F'
+GROUP BY name, sex, noc, sport
+ORDER BY medal_count DESC
+LIMIT 10
+
+
+-- COMMAND ----------
+
+--Number of athlete that has ever participated per country
+SELECT team, count(Team)
+FROM `sportsstats_1_csv`
+GROUP BY team
+ORDER BY count(team) DESC
+
+-- COMMAND ----------
+
+--Number of female athlete that has participated per country
+SELECT team, count(team) as number_of_female_participant
+FROM `sportsstats_1_csv`
+WHERE sex = 'F'
+GROUP BY team
+ORDER BY count(team) DESC
+
+-- COMMAND ----------
+
+--Top countries in terms of the total number of medals
+SELECT team, count(medal) as medal_count
+FROM `sportsstats_1_csv`
+WHERE medal <> 'NA'
+GROUP BY team
+ORDER BY count(medal) DESC
+lIMIT 10
+
+
+-- COMMAND ----------
+
+--Top countries in terms of the total number of female medal winners
+SELECT team, count(medal) as medal_count
+FROM `sportsstats_1_csv`
+WHERE medal <> 'NA' AND sex ='F'
+GROUP BY team
+ORDER BY count(medal) DESC
+lIMIT 10
